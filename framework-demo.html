@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vue Experiment - Student Records</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="app" class="demo-container">
+
+        <header>
+            <div>
+                <h1>Vue 3 Experiment</h1>
+                <p class="current-user">Same API, different framework</p>
+            </div>
+
+            <div class="header-actions">
+                <a class="link-button" href="index.html">Back to vanilla JS</a>
+                <button type="button" class="secondary-button" @click="loadStudents">
+                    Refresh
+                </button>
+            </div>
+        </header>
+
+        <section class="table-section">
+
+            <h2>Student Records</h2>
+
+            <p class="hint">
+                This table uses the same GET /api/students endpoint, rendered by Vue
+                instead of createElement() calls.
+            </p>
+
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="vueSearch"
+                    v-model="search"
+                    placeholder="Search by name or USN"
+                >
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>USN</th>
+                        <th>Name</th>
+                        <th>Branch</th>
+                        <th>Marks</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="student in filteredStudents" :key="student.id">
+                        <td>{{ student.usn }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.branch }}</td>
+                        <td>{{ student.marks }}</td>
+                        <td>
+                            <button
+                                type="button"
+                                class="delete-button"
+                                @click="deleteStudent(student.id)"
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p v-if="error" class="hint">{{ error }}</p>
+
+            <p v-if="filteredStudents.length === 0" id="emptyMessage">
+                No student records found.
+            </p>
+
+            <p class="demo-table-note">
+                Total records in the Vue state: {{ students.length }}
+            </p>
+
+        </section>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+    <script>
+        const { createApp } = Vue;
+
+        // Same API base trick as script.js: relative URL when served by server.js,
+        // full URL when the file is opened directly.
+        const API_BASE =
+            location.protocol === "file:"
+                ? "http://localhost:3000/api/students"
+                : "/api/students";
+
+        createApp({
+            data() {
+                return {
+                    students: [],
+                    search: "",
+                    error: "",
+                };
+            },
+
+            computed: {
+                // Vue re-runs this automatically whenever students or search changes.
+                filteredStudents() {
+                    const text = this.search.trim().toLowerCase();
+
+                    return this.students.filter(function (student) {
+                        return (
+                            student.name.toLowerCase().includes(text) ||
+                            student.usn.toLowerCase().includes(text)
+                        );
+                    });
+                },
+            },
+
+            methods: {
+                async loadStudents() {
+                    this.error = "";
+
+                    try {
+                        const response = await fetch(API_BASE);
+
+                        if (!response.ok) {
+                            throw new Error("Status " + response.status);
+                        }
+
+                        this.students = await response.json();
+                    } catch (error) {
+                        this.students = [];
+                        this.error =
+                            "Could not reach the API (" + error.message + "). " +
+                            "Start it with: node server.js";
+                    }
+                },
+
+                async deleteStudent(id) {
+                    if (!confirm("Are you sure you want to delete this student?")) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(API_BASE + "/" + id, {
+                            method: "DELETE",
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("Delete failed with status " + response.status);
+                        }
+
+                        await this.loadStudents();
+                    } catch (error) {
+                        this.error = error.message;
+                    }
+                },
+            },
+
+            // Runs once, as soon as the app is attached to #app.
+            mounted() {
+                this.loadStudents();
+            },
+        }).mount("#app");
+    </script>
+
+</body>
+</html>

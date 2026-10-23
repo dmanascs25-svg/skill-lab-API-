@@ -1,0 +1,9 @@
+# Dependencies (not used by this project yet, but keeps the repo clean)
+node_modules/
+
+# Editor and agent tooling state - local only
+.deep-copilot/
+.vscode/
+
+# Logs
+*.log

@@ -1,0 +1,9 @@
+{
+  "name": "student-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Student Management System with a mock REST API, localStorage login and a Vue comparison page",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
