@@ -1,0 +1,32 @@
+{
+  "students": [
+    {
+      "id": "1",
+      "usn": "1RV25CS001",
+      "name": "Rahul",
+      "branch": "CSE",
+      "marks": 85
+    },
+    {
+      "id": "2",
+      "usn": "1RV25EC002",
+      "name": "Priya",
+      "branch": "ECE",
+      "marks": 92
+    },
+    {
+      "id": "3",
+      "usn": "1RV25CS003",
+      "name": "Arjun",
+      "branch": "CSE",
+      "marks": 78
+    },
+    {
+      "id": "4",
+      "usn": "1RV25EE004",
+      "name": "Sneha",
+      "branch": "EEE",
+      "marks": 88
+    }
+  ]
+}
